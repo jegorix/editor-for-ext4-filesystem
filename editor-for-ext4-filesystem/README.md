@@ -1,44 +1,44 @@
 # ext4tool
 
-`ext4tool` - курсовой проект по ОSiСП: интерактивный анализатор и безопасный редактор метаданных образов файловой системы ext4.
+`ext4tool` is a coursework project for Operating Systems and System Programming: an interactive analyzer and safe metadata editor for ext4 filesystem images.
 
-Программа работает с образом ext4, показывает основные метаданные через интерфейс на `ncurses`, поддерживает английский и русский язык интерфейса и позволяет изменять ограниченный набор метаданных только в явном режиме записи.
+The program works with an ext4 image file, displays key metadata through an `ncurses` interface, supports English and Russian UI, and allows editing a limited set of metadata only in explicit write mode.
 
-## Структура проекта
+## Project structure
 
-- `src/` - исходный код
-- `include/` - заголовочные файлы
-- `Makefile` - сценарий сборки
-- `test-ext4.img` - тестовый образ ext4 для локальной проверки
+- `src/` - source code
+- `include/` - header files
+- `Makefile` - build script
+- `test-ext4.img` - sample ext4 image for local testing
 
-## Возможности программы
+## Features
 
-Главное меню содержит следующие экраны:
+The main dashboard includes the following screens:
 
-- `Superblock View` - просмотр основных полей суперблока
-- `Backup Superblocks` - список возможных резервных суперблоков
-- `Group Descriptor` - просмотр дескриптора выбранной группы блоков
-- `Inode View` - просмотр метаданных inode
-- `Directory Browser` - просмотр содержимого каталога по абсолютному пути или `inode:N`
-- `Resolve Path` - поиск inode по абсолютному пути
-- `Resolve Inode` - поиск пути по номеру inode
-- `Search By Name` - поиск первого объекта по имени
-- `Filesystem Statistics` - сводная статистика по файловой системе
-- `Root Directory Statistics` - статистика корневого каталога
-- `Language` - переключение языка интерфейса
+- `Superblock View` - inspect main superblock fields
+- `Backup Superblocks` - list candidate backup superblocks
+- `Group Descriptor` - inspect a selected block group descriptor
+- `Inode View` - inspect inode metadata
+- `Directory Browser` - list directory entries by absolute path or `inode:N`
+- `Resolve Path` - resolve an absolute path to an inode number
+- `Resolve Inode` - resolve an inode number to a path
+- `Search By Name` - find the first matching entry by name
+- `Filesystem Statistics` - show aggregated filesystem statistics
+- `Root Directory Statistics` - show simple root directory statistics
+- `Language` - switch the interface language
 
-## Редактирование метаданных
+## Metadata editing
 
-Редактирование доступно только при запуске с флагом `--write`.
+Editing is available only when the program is started with `--write`.
 
-Поддерживаемые поля суперблока:
+Supported superblock fields:
 
-- метка тома
-- счётчик монтирований
-- максимальный счётчик монтирований
-- интервал проверки
+- volume label
+- mount count
+- max mount count
+- check interval
 
-Поддерживаемые поля inode:
+Supported inode fields:
 
 - mode
 - UID
@@ -48,84 +48,84 @@
 - mtime
 - flags
 
-При каждой операции записи программа:
+For each write operation the tool:
 
-- создаёт резервную копию образа
-- применяет изменение
-- повторно считывает метаданные и проверяет новое значение
+- creates a backup copy of the image
+- applies the change
+- rereads metadata and verifies the updated value
 
-## Ограничения безопасности
+## Safety restrictions
 
-- По умолчанию используется режим `--readonly`
-- Если обнаружены неподдерживаемые `incompat`-возможности ext4, программа принудительно включает режим только для чтения
-- В режиме только для чтения редактирование запрещено
-- Программа предназначена для работы с образами ext4, а не с подключёнными разделами
+- Default mode is `--readonly`
+- If unsupported ext4 `incompat` features are detected, the tool forces readonly mode
+- Editing is blocked while readonly mode is active
+- The program is intended for ext4 image files, not mounted live partitions
 
-Резервные копии создаются рядом с исходным образом в формате `<image>.<timestamp>.bak`.
+Backup files are created next to the source image in the form `<image>.<timestamp>.bak`.
 
-## Требования
+## Requirements
 
-- компилятор C с поддержкой C11, например `gcc`
+- C compiler with C11 support, for example `gcc`
 - `make`
-- библиотека разработки `ncurses`
+- `ncurses` development library
 
-## Сборка
+## Build
 
 ```bash
 make
 ```
 
-Итоговый исполняемый файл:
+Resulting binary:
 
 ```bash
 build/ext4tool
 ```
 
-## Запуск
+## Run
 
-Режим только для чтения:
+Readonly mode:
 
 ```bash
 ./build/ext4tool --image ./test-ext4.img --readonly
 ```
 
-Режим записи:
+Write mode:
 
 ```bash
 ./build/ext4tool --image ./test-ext4.img --write
 ```
 
-Русский язык интерфейса:
+Russian interface:
 
 ```bash
 ./build/ext4tool --image ./test-ext4.img --lang ru
 ```
 
-Справка:
+Help:
 
 ```bash
 ./build/ext4tool --help
 ```
 
-## Параметры командной строки
+## Command line options
 
 ```text
---image <path>       путь к образу ext4
---readonly           режим только для чтения (по умолчанию)
---write              включить режим записи
---lang <en|ru>       язык интерфейса
--h, --help           показать справку
+--image <path>       path to an ext4 image file
+--readonly           readonly mode (default)
+--write              enable write mode
+--lang <en|ru>       interface language
+-h, --help           show help
 ```
 
-## Управление в интерфейсе
+## Interface controls
 
-- `Up` / `Down` - перемещение по пунктам меню
-- `Enter` - открыть выбранный экран или подтвердить ввод
-- `Esc` - закрыть диалог или вернуться назад
-- `q` - выйти из текущего окна или из главного экрана
+- `Up` / `Down` - move through menu items
+- `Enter` - open the selected screen or confirm input
+- `Esc` - close a dialog or go back
+- `q` - exit the current window or the main screen
 
-## Примечания
+## Notes
 
-- Поиск по пути принимает только абсолютные пути, например `/`, `/home`, `/lost+found`
-- Просмотр каталога принимает путь вида `/path` или цель вида `inode:N`, например `inode:2`
-- Поиск по имени возвращает первое совпадение, найденное при обходе дерева от корневого каталога
+- Path lookup accepts only absolute paths such as `/`, `/home`, `/lost+found`
+- Directory browser accepts either `/path` or `inode:N`, for example `inode:2`
+- Name search returns the first match found during traversal from the root directory
